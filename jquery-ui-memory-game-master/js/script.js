@@ -223,6 +223,7 @@
 				}
 			}	
 		},
+		//"kortin" luonti
 		_create: function () {
 			this._init(true);
 			this._build();
@@ -292,6 +293,7 @@
 			this._arrangeCards(true);
 			this.ready=true;
 		},
+		//kortti-taulukon, eli ns.pakan luonti
 		_createCardsArrayFromMarkup: function() {
 			var game=this;
 			var cards=[];
@@ -330,6 +332,7 @@
 			});
 			this.options.cards=cards;
 		},
+		//pöydän resetointi
 		_resetCards: function() {
 			if (this.timeoutId) {
 				clearTimeout(this.timeoutId);
@@ -344,6 +347,7 @@
 				}
 			});
 		},
+		//korttin kääntyminen takaisin
 		_closeCards: function() {
 			if (this.timeoutId) {
 				clearTimeout(this.timeoutId);
@@ -358,6 +362,7 @@
 				}
 			});
 		},
+		//korttien luonti
 		_createCard: function(cardIndex, cardInfo) {
 			for (var i=0; i<2; i++) {
 				var containerId=this.getCardId(cardIndex,i);		
@@ -395,9 +400,11 @@
 				if (this.suljettu[cardIndex]) this.enableCardLink($container);
 			}
 		},
+		//kortin idn hakeva osio
 		getCardId: function(cardIndex, side) {
 			return this.elementId+"-card"+cardIndex+"-"+side;
 		},
+		//etsii kortin statuksen, eli esim tausta- ja etukuvan
 		_setCardStatus: function($card, status, store) {
 			if (store) $card.data("status", status);
 			var $frontImg=$card.find("img.front");
@@ -412,6 +419,7 @@
 				$a.addClass("back");
 			}
 		},
+		//tarkista onko korttia klikattu
 		_cardClicked: function(card) {
 			var $card=$(card);
 			if ($card.data("currentDirection")!=0 || this.currentCards.length>1) return false;
@@ -433,6 +441,7 @@
 				
 			}
 		},
+		//kortin kääntö
 		_startFlip: function(card, direction) {
 			var $card=$(card);
 			//$card.stop(true);
@@ -446,6 +455,7 @@
 			}
 			this._startFlipAnimation(card, direction);
 		},
+		//flippaus-animaatio
 		_startFlipAnimation: function(card, direction) {
 			var $card=$(card);
 			
@@ -465,7 +475,6 @@
 					$(this).removeClass("front");
 				}
 				
-					
 				$(this).animateScaleX(0, 1, game.option("cardFlipDuration")/2, easing=="linear"?"linear":"easeOut"+easing, function(){
 					var $card=$(this).parents(".memory-card-container");
 					var game=$card.data("game");
@@ -524,22 +533,27 @@
 				});
 			});
 		},
+		//laskee montako korttia pakassa on jäljellä
 		getCurrentCardsLength: function() {
 			return this.currentCards.length;
 		},
+		//palauttaa pakassa jäljellä olevat kortit
 		getCurrentCard: function(i) {
 			return this.currentCards[i];
 		},
+		//asettaa kortin tilaksi "closed"
 		setSuljettu: function(idx) {
 			if (!this.suljettu[idx]) this.nsuljettu++;
 			this.suljettu[idx]=true;
 		},
+		//mahdollistaa kortin linkin käytettäväksi, kun pari on löytynyt
 		enableCardLink: function($card) {
 			var $a=$card.find("a");
 			$a.attr("href", $card.data("linkUrl"));
 			var linkTitle=$card.data("linkTitle");
 			if (linkTitle!==undefined && linkTitle!==null) $a.attr("title", linkTitle);
 		},
+		//"popauttaa kyseisen kortin pois pakasta"
 		popCurrentCard: function($card) {
 			var nclosed=0;
 			for (var i=0; i<this.currentCards.length; i++) {
@@ -550,18 +564,20 @@
 			}
 			if (nclosed==this.currentCards.length) this.currentCards=[];
 		},
+		//sulkee kyseisen kortin
 		closeCurrentCards: function() {
 			if (this.timeoutId) clearTimeout(this.timeoutId);
 			var that=this;
 			this.timeoutId=setTimeout(function(){that.actuallyCloseCurrentCards();}, that.option("flipBackTimeout"));
 		},
+		//kääntää jäljellä olevat korti nurin
 		actuallyCloseCurrentCards: function() {
 			for (var i=0; i<this.currentCards.length; i++) {
 				this._startFlip(this.currentCards[i],-1);
 			}
 		}
 	});
-	
+	//funktio virheitä varten
 	function debug(){
 		if (window.console) console.log.apply(console,arguments);
 	}
