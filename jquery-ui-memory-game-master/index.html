@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+	<link href="css/tyyli.css" rel="stylesheet">
+	<script src="js/script.js"></script>
+    <meta name="author" content="Tero Rantanen">
+    <title>Muistipeli</title>
+	<script>
+		$(function(){
+			$("#memory-game").memoryGame();
+		});
+	</script>
+
+	<!-- <style>
+	.code {
+		padding-left: 20px; background-color: black; color: white;
+	}
+	</style> -->
+</head>
+<body>
+	<h1>MUISTIPELI</h1>
+	<div id="memory-game">
+		<!--tähän voit vaihtaa kuvia-->
+		<a href="http://en.wikipedia.org/wiki/Iguana"><img width="100" height="100" src="img/iguana.jpg"></a>
+		<a href="http://en.wikipedia.org/wiki/Panda"><img src="img/panda.jpg"></a>
+		<a href="http://en.wikipedia.org/wiki/Lemur"><img src="img/lemur.jpg"></a>
+		<a href="http://en.wikipedia.org/wiki/Penguin"><img src="img/penguins.jpg"></a>
+		<a href="http://en.wikipedia.org/wiki/Polar_bear"><img src="img/polarbear.jpg"></a>
+		<a href="http://en.wikipedia.org/wiki/Rabbit"><img src="img/rabbit.jpg"></a>
+		<a href="http://en.wikipedia.org/wiki/Rhinoceros"><img src="img/rhino.jpg"></a>
+		<a href="http://en.wikipedia.org/wiki/Common_seal"><img src="img/seal.jpg"></a>
+		<a href="http://en.wikipedia.org/wiki/Zebra"><img src="img/zebra.jpg"></a>
+	</div>
+</body>
+</html>
