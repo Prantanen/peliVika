@@ -1,5 +1,6 @@
 (function($){
-	
+
+	//funktio pelin "lukemiselle" - onko peli alussa, lopetettu/läpi, jne
 	$.fn.animateScaleX = function(startScale, endScale, duration, easing, complete) {
 	    var args = $.speed(duration, easing, complete);
 	    var step = args.step;
@@ -15,48 +16,36 @@
 	    });
 	};
 	
+	//muuttujat itse pelille
 	$.widget("tero.memoryGame", {
-		
-		disclosed: null, 		
-		ndisclosed: 0,
+		suljettu: null, 		
+		nsuljettu: 0,
 		elementId: "",
 		currentCards: null,		
 		timeoutId: null,
 		ready: false,
 		innerElement: null,
 		resetPending: null,
-		nmoves: 0,
-				
+		nmoves: 0,	
 		options: {
-			
 			cards: [],		
-			
 			imagesPath: "",
-			
 			cardWidth: 'auto',
 			cardHeight: 'auto',
-			
 			preferredAspectRatio: 1,
 			autoResize: true,
-			
 			cardFlipDuration: 300, 
 			flipBackTimeout: 1000,
 			flipAnimationEasing: "linear",
-			
 			minCardMargin: 10,
 			maxCardMargin: 50,
-			
 			subtractTopOffset: false,
-			
 			maxRotation: 10,
-			
 			order: null,
-			alreadyDisclosed: [],
-		
-			onPairDisclosed: function(object) {}
-			
+			alreadySuljettu: [],
+			//onPairSuljettu: function(object) {}
 		},
-		
+		//mitä tapahtuu, kun aloitetaan alusta/resetoidaan
 		reset: function(animated, reorder, rebuild) {
 			if (animated) {
 				this.resetPending={
@@ -77,7 +66,7 @@
 				}
 			}
 		},
-		
+		//korttien uudelleenjärjestely pöydälle
 		reorder:function(keepRotations, useOptions) {
 			if (keepRotations===undefined) keepRotations=true;
 			if (this.options.order===null || this.options.order.length!=2*this.options.cards.length) useOptions=false;
@@ -119,22 +108,17 @@
 				}
 			}
 		},
-		
+		//uudelleenjärjestelyssä myös tsekataan kuvat oikean kokoisiksi. en ole varma onko tällä oikeasti edes käyttöä
 		rearrange: function() {
-			// Sets rotations, positions, etc.
-			// Shouldn't be needed as a public method.
-			//   Needed after changing some size options, 
-			//   but it will be done internally already.
 			this.resize();
 			this._arrangeCards();
-			
 		},
-				
+		//tuhoa(?) oletettavasti ei käytössä
 		destroy: function () {
 			this._cleanUp();
 			$.Widget.prototype.destroy.call(this);
 		},
-		
+		//uudelleensovitetaan kutsutut kuvat kehyksiin sopiviksi
 		resize: function (ncalls) {
 			if (ncalls===undefined) ncalls=0;
 			var done=false;
@@ -142,7 +126,6 @@
 			var gameWidth=$(this.element).width()-1;
 			var maxHeight=this._getMaxHeight();
 			
-			// No of columns using full width with minimum margin:
 			var ncards=this.options.cards.length*2;
 			var columns = Math.min(Math.floor(gameWidth/(this.options.cardWidth+2*this.options.minCardMargin)), ncards);
 			var rows=Math.ceil(ncards/columns);
@@ -162,7 +145,6 @@
 					}
 				}
 			}
-			
 			
 			var outerWidth=Math.max(2*this.options.minCardMargin+this.options.cardWidth, Math.min(2*this.options.maxCardMargin+this.options.cardWidth,
 				Math.floor(gameWidth/columns)
@@ -185,7 +167,6 @@
 				});
 			}
 			
-			
 			$(this.innerElement).children(".memory-card-container").css({
 				width: outerWidth,
 				height: outerHeight
@@ -198,15 +179,12 @@
 					this.resize(ncalls);
 				}
 			}
-			
 		},
-		
-		
+		//etsitään kuvalle maksimikoko
 		_getMaxHeight: function() {
 			return document.documentElement.clientHeight-(this.options.subtractTopOffset?$(this.innerElement).offset().top:0);
 		},
-		
-		
+		//kuvien keikautus-efekti
 		_arrangeCards: function(rotate) {
 			var game=this;
 			$(this.innerElement).children(".memory-card-container").each(function(){
@@ -228,8 +206,6 @@
 				}
 			});
 		},
-		
-		
 		_setOption: function (key,value) {
 			this._super(key,value);
 		},
@@ -245,10 +221,8 @@
 				) {
 					this.rearrange();
 				}
-			}
-			
+			}	
 		},
-		
 		_create: function () {
 			this._init(true);
 			this._build();
@@ -257,10 +231,9 @@
 				game.resize();
 			});
 		},
-		
 		_init: function(firstTime) {
-			this.disclosed=[];
-			this.ndisclosed=0;
+			this.suljettu=[];
+			this.nsuljettu=0;
 			this.nmoves=0;
 			this.currentCards=[];
 			this.elementId=$(this.element).attr("id");
@@ -284,13 +257,12 @@
 				if (this.options.cards.length==0 && $(this.element).find("a").length>0) {
 					this._createCardsArrayFromMarkup();
 				}
-				this.ndisclosed=this.options.alreadyDisclosed.length;
-				for (var i=0; i<this.options.alreadyDisclosed.length; i++) {
-					this.disclosed[this.options.alreadyDisclosed[i]]=true;
+				this.nsuljettu=this.options.alreadySuljettu.length;
+				for (var i=0; i<this.options.alreadySuljettu.length; i++) {
+					this.suljettu[this.options.alreadyuljettu[i]]=true;
 				}
 			}
 		},
-		
 		_cleanUp: function() {
 			$(this.innerElement).children().each(function(){
 				$(this).stop(true);
@@ -303,8 +275,7 @@
 				this.timeoutId=null;
 			}
 			this._init();
-		},
-				
+		},		
 		_build: function() {
 			$(this.element).children().each(function(){
 				if ($(this).hasClass("memory-game-inner")) $(this).children().remove();
@@ -321,7 +292,6 @@
 			this._arrangeCards(true);
 			this.ready=true;
 		},
-		
 		_createCardsArrayFromMarkup: function() {
 			var game=this;
 			var cards=[];
@@ -360,7 +330,6 @@
 			});
 			this.options.cards=cards;
 		},
-		
 		_resetCards: function() {
 			if (this.timeoutId) {
 				clearTimeout(this.timeoutId);
@@ -374,9 +343,7 @@
 					game._setCardStatus($(this), 0, true);
 				}
 			});
-		
 		},
-		
 		_closeCards: function() {
 			if (this.timeoutId) {
 				clearTimeout(this.timeoutId);
@@ -391,7 +358,6 @@
 				}
 			});
 		},
-		
 		_createCard: function(cardIndex, cardInfo) {
 			for (var i=0; i<2; i++) {
 				var containerId=this.getCardId(cardIndex,i);		
@@ -419,21 +385,19 @@
 					width: this.options.cardWidth,
 					height: this.options.cardHeight
 				});
-				this._setCardStatus($container, this.disclosed[cardIndex]?2:0, true);
+				this._setCardStatus($container, this.suljettu[cardIndex]?2:0, true);
 				$a.click(function(){
 					var $card=$(this).parents(".memory-card-container");
 					return $card.data("game")._cardClicked($card.get()[0]);
 				});
 				
 				$(this.innerElement).append($container);
-				if (this.disclosed[cardIndex]) this.enableCardLink($container);
+				if (this.suljettu[cardIndex]) this.enableCardLink($container);
 			}
 		},
-		
 		getCardId: function(cardIndex, side) {
 			return this.elementId+"-card"+cardIndex+"-"+side;
 		},
-		
 		_setCardStatus: function($card, status, store) {
 			if (store) $card.data("status", status);
 			var $frontImg=$card.find("img.front");
@@ -448,7 +412,6 @@
 				$a.addClass("back");
 			}
 		},
-		
 		_cardClicked: function(card) {
 			var $card=$(card);
 			if ($card.data("currentDirection")!=0 || this.currentCards.length>1) return false;
@@ -470,7 +433,6 @@
 				
 			}
 		},
-		
 		_startFlip: function(card, direction) {
 			var $card=$(card);
 			//$card.stop(true);
@@ -483,9 +445,7 @@
 				
 			}
 			this._startFlipAnimation(card, direction);
-		
 		},
-		
 		_startFlipAnimation: function(card, direction) {
 			var $card=$(card);
 			
@@ -513,13 +473,13 @@
 					var cardIndex=$card.data("cardIndex");
 					var event=false;
 					if (direction>0) {
-						var disclosed=false;
+						var suljettu=false;
 						if (game.getCurrentCardsLength()>0) { 
 							var $currentCard0=$(game.getCurrentCard(0));
 							if (game.getCurrentCardsLength()>1) {
 								var $currentCard1=$(game.getCurrentCard(1));
 								if ($currentCard1.data("cardIndex")==$currentCard0.data("cardIndex")) {
-									disclosed=true;
+									suljettu=true;
 									if (cardIndex!=$currentCard1.data("cardIndex")) {
 										throw "Flipping with direction 1 ended on a card that is not within currentCards. Something's wrong.";
 									}
@@ -527,17 +487,15 @@
 									$currentCard0.data("status", 2);
 									game.enableCardLink($currentCard0);
 									game.enableCardLink($currentCard1);
-									game.setDisclosed(cardIndex);
+									game.setSuljettu(cardIndex);
 									game.currentCards=[];
 									event=true;
 								}
 								else {
 									game.closeCurrentCards();
-								}
-								
+								}		
 							}
-						}
-						    
+						}				    
 					}
 					else {
 						$card.data("status", 0);
@@ -552,37 +510,30 @@
 					if (event) {
 						var card=this;
 						setTimeout(function(){
-							game.option("onPairDisclosed").call(game, {
+							game.option("onPairSuljettu").call(game, {
 								card: card,
 								cardIndex: cardIndex,
 								cardInfo: game.option("cards")[cardIndex],
-								disclosedPairs: game.ndisclosed,
+								suljettuPairs: game.nsuljettu,
 								totalPairs: game.option("cards").length,
 								moves: game.nmoves,
-								finished: (game.ndisclosed==game.option("cards").length)
+								finished: (game.nsuljettu==game.option("cards").length)
 							});
 						},1)
 					}
-				
 				});
-					
-				
 			});
-				
-			
 		},
-		
 		getCurrentCardsLength: function() {
 			return this.currentCards.length;
 		},
 		getCurrentCard: function(i) {
 			return this.currentCards[i];
 		},
-		setDisclosed: function(idx) {
-			if (!this.disclosed[idx]) this.ndisclosed++;
-			this.disclosed[idx]=true;
+		setSuljettu: function(idx) {
+			if (!this.suljettu[idx]) this.nsuljettu++;
+			this.suljettu[idx]=true;
 		},
-		
 		enableCardLink: function($card) {
 			var $a=$card.find("a");
 			$a.attr("href", $card.data("linkUrl"));
@@ -599,25 +550,19 @@
 			}
 			if (nclosed==this.currentCards.length) this.currentCards=[];
 		},
-		
 		closeCurrentCards: function() {
 			if (this.timeoutId) clearTimeout(this.timeoutId);
 			var that=this;
 			this.timeoutId=setTimeout(function(){that.actuallyCloseCurrentCards();}, that.option("flipBackTimeout"));
 		},
-		
 		actuallyCloseCurrentCards: function() {
 			for (var i=0; i<this.currentCards.length; i++) {
 				this._startFlip(this.currentCards[i],-1);
 			}
 		}
-		
-	
-	
 	});
 	
 	function debug(){
 		if (window.console) console.log.apply(console,arguments);
 	}
-
 }(jQuery));
